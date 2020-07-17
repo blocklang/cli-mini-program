@@ -20,7 +20,7 @@ mp --type weapp --model-dir ./your/model/root/dir
 
 ```text
 --type              小程序类型，weapp (微信小程序)
---model-dir         存放页面模型的根路径
+--model-dir         存放页面模型的根路径，指向小程序项目的根目录，而不是仓库的根目录
 ```
 
 ## 构建项目
