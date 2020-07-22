@@ -8,7 +8,6 @@ export class RealFileSystemHost implements FileSystemHost {
 	}
 
 	readFile(filePath: string): string {
-		console.log(this.rootPath);
 		throw new Error('Method not implemented.');
 	}
 

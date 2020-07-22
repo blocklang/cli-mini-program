@@ -3,6 +3,10 @@ import { FileSystemHost } from './FileSystemHost';
 import { InMemoryFileSystemHost } from './InMemoryFileSystemHost';
 import { RealFileSystemHost } from './RealFileSystemHost';
 import { treeToJson } from '../util';
+import * as parser from '@babel/parser';
+import traverse from '@babel/traverse';
+import generator from '@babel/generator';
+import * as t from '@babel/types';
 
 export interface ProjectOptions {
 	rootPath: string;
@@ -14,10 +18,6 @@ export default class MiniProgramProject {
 
 	constructor(options: ProjectOptions) {
 		const { rootPath, useInMemoryFileSystem = false } = options;
-
-		console.log(rootPath);
-		console.log(useInMemoryFileSystem);
-
 		if (useInMemoryFileSystem) {
 			this.fileSystem = new InMemoryFileSystemHost(rootPath);
 		} else {
@@ -37,20 +37,39 @@ export default class MiniProgramProject {
 		return false;
 	}
 
+	// onLaunch: function () {
+
+	// }
+
 	private createAppJs(appModel: PageModel) {
 		const filePath = appModel.pageInfo.groupPath + appModel.pageInfo.key + '.js';
-		const content = `App({
-  onLaunch: function () {
 
-  }
-})`;
-		this.fileSystem.writeFile(filePath, content);
+		const appWidget = appModel.widgets[0];
+		// 过滤掉事件
+		const events = appWidget.properties.filter((prop) => prop.valueType === 'function');
+
+		const source = `App({})`;
+		const ast = parser.parse(source);
+		traverse(ast, {
+			ObjectExpression(path) {
+				events.forEach((event) => {
+					const body = t.blockStatement([]);
+					const prop = t.objectProperty(t.identifier(event.name), t.functionExpression(null, [], body));
+					path.pushContainer('properties', prop);
+				});
+			},
+		});
+
+		const { code } = generator(ast);
+
+		this.fileSystem.writeFile(filePath, code);
 	}
 
 	private createAppJson(appModel: PageModel) {
 		const filePath = appModel.pageInfo.groupPath + appModel.pageInfo.key + '.json';
 		const appWidget = appModel.widgets[0];
-		const properties = appWidget.properties;
+		// 过滤掉事件
+		const properties = appWidget.properties.filter((prop) => prop.valueType !== 'function');
 
 		const appConfig: AppConfig = { pages: [], ...treeToJson(properties) };
 		const content = JSON.stringify(appConfig, null, 2);

@@ -5,7 +5,7 @@ import MiniProgramProject from '../../../src/weapp/MiniProgramProject';
 import { PageModel } from '../../../src/interfaces';
 
 describe('MiniProgramProject', () => {
-	it('create app', () => {
+	it('create app - properties', () => {
 		const project = new MiniProgramProject({ rootPath: '', useInMemoryFileSystem: true });
 
 		const appModel: PageModel = {
@@ -63,11 +63,7 @@ describe('MiniProgramProject', () => {
 		};
 		project.createApp(appModel);
 
-		const appJsSource = `App({
-  onLaunch: function () {
-
-  }
-})`;
+		const appJsSource = `App({});`;
 		const appJsonSource = `{
   "pages": [],
   "window": {
@@ -76,6 +72,44 @@ describe('MiniProgramProject', () => {
     "navigationBarTitleText": "Mini Program",
     "navigationBarTextStyle": "black"
   }
+}`;
+		const appWxssSource = '';
+		assert.equal(project.getSource('app.js'), appJsSource);
+		assert.equal(project.getSource('app.json'), appJsonSource);
+		assert.equal(project.getSource('app.wxss'), appWxssSource);
+	});
+
+	it('create app - events', () => {
+		const project = new MiniProgramProject({ rootPath: '', useInMemoryFileSystem: true });
+
+		const appModel: PageModel = {
+			pageInfo: { id: 1, key: 'app', groupPath: '' },
+			widgets: [
+				{
+					id: '1',
+					parentId: '-1',
+					apiRepoId: 1,
+					widgetName: 'App',
+					properties: [
+						{
+							id: '1',
+							name: 'onLaunch',
+							valueType: 'function',
+							isExpr: false,
+							parentId: '-1',
+						},
+					],
+				},
+			],
+			data: [],
+		};
+		project.createApp(appModel);
+
+		const appJsSource = `App({
+  onLaunch: function () {}
+});`;
+		const appJsonSource = `{
+  "pages": []
 }`;
 		const appWxssSource = '';
 		assert.equal(project.getSource('app.js'), appJsSource);
