@@ -1,5 +1,5 @@
-import { treeToJson } from '../../src/util';
-import { AttachedWidgetProperty } from '../../src/interfaces';
+import { treeToJson, treeToXml } from '../../src/util';
+import { AttachedWidgetProperty, AttachedWidget } from '../../src/interfaces';
 
 const { describe, it } = intern.getInterface('bdd');
 const { assert } = intern.getPlugin('chai');
@@ -127,5 +127,121 @@ describe('util', () => {
 		];
 		const json = treeToJson(tree);
 		assert.deepEqual(json, { object1: { object11: { int1: 1 } } });
+	});
+
+	it('treeToXml - empty page', () => {
+		// 转换时忽略 Page 部件
+		const widgets: AttachedWidget[] = [
+			{
+				id: '1',
+				parentId: '-1',
+				apiRepoId: 1,
+				widgetName: 'Page',
+				properties: [],
+			},
+		];
+
+		const xml = treeToXml(widgets);
+		assert.equal(xml, '');
+	});
+
+	it('treeToXml - two siblings views', () => {
+		// 转换时忽略 Page 部件
+		const widgets: AttachedWidget[] = [
+			{
+				id: '1',
+				parentId: '-1',
+				apiRepoId: 1,
+				widgetName: 'Page',
+				properties: [],
+			},
+			{
+				id: '2',
+				parentId: '1',
+				apiRepoId: 1,
+				widgetName: 'view',
+				properties: [],
+			},
+			{
+				id: '3',
+				parentId: '1',
+				apiRepoId: 1,
+				widgetName: 'view',
+				properties: [],
+			},
+		];
+
+		const xml = treeToXml(widgets);
+		assert.equal(xml, '<view></view><view></view>');
+	});
+
+	it('treeToXml - two nest views', () => {
+		// 转换时忽略 Page 部件
+		const widgets: AttachedWidget[] = [
+			{
+				id: '1',
+				parentId: '-1',
+				apiRepoId: 1,
+				widgetName: 'Page',
+				properties: [],
+			},
+			{
+				id: '2',
+				parentId: '1',
+				apiRepoId: 1,
+				widgetName: 'view',
+				properties: [],
+			},
+			{
+				id: '3',
+				parentId: '2',
+				apiRepoId: 1,
+				widgetName: 'view',
+				properties: [],
+			},
+		];
+
+		const xml = treeToXml(widgets);
+		assert.equal(xml, '<view><view></view></view>');
+	});
+
+	it('treeToXml - properties', () => {
+		// 转换时忽略 Page 部件
+		const widgets: AttachedWidget[] = [
+			{
+				id: '1',
+				parentId: '-1',
+				apiRepoId: 1,
+				widgetName: 'Page',
+				properties: [],
+			},
+			{
+				id: '2',
+				parentId: '1',
+				apiRepoId: 1,
+				widgetName: 'view',
+				properties: [
+					{
+						id: '1',
+						parentId: '-1',
+						name: 'prop1',
+						value: 'value1',
+						valueType: 'string',
+						isExpr: false,
+					},
+					{
+						id: '2',
+						parentId: '-1',
+						name: 'prop2',
+						value: 'value2',
+						valueType: 'string',
+						isExpr: false,
+					},
+				],
+			},
+		];
+
+		const xml = treeToXml(widgets);
+		assert.equal(xml, `<view prop1="value1" prop2="value2"></view>`);
 	});
 });
