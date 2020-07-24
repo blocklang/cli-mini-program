@@ -1,4 +1,7 @@
 import { FileSystemHost } from './FileSystemHost';
+import * as fs from 'fs';
+import { join } from 'path';
+import { ENCODING_UTF8 } from '../util';
 
 export class RealFileSystemHost implements FileSystemHost {
 	private rootPath: string;
@@ -8,11 +11,12 @@ export class RealFileSystemHost implements FileSystemHost {
 	}
 
 	readFile(filePath: string): string {
-		console.log(this.rootPath);
-		throw new Error('Method not implemented.');
+		const path = join(this.rootPath, filePath);
+		return fs.readFileSync(path, ENCODING_UTF8);
 	}
 
 	writeFile(filePath: string, content: string): void {
-		throw new Error('Method not implemented.');
+		const path = join(this.rootPath, filePath);
+		fs.writeFileSync(path, content);
 	}
 }
