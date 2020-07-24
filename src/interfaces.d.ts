@@ -34,7 +34,7 @@ interface PageDataItem {
 	id: string;
 	parentId: string;
 	name: string;
-	value?: string;
+	defaultValue?: string;
 	type: PageDataItemValueType;
 }
 
@@ -54,3 +54,5 @@ export interface AppConfig {
 	pages: string[];
 	window: AppWindow;
 }
+
+export interface PageConfig extends AppWindow {}

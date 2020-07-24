@@ -1,5 +1,5 @@
-import { treeToJson, treeToXml } from '../../src/util';
-import { AttachedWidgetProperty, AttachedWidget } from '../../src/interfaces';
+import { treeToJson, treeToXml, treeToPageData } from '../../src/util';
+import { AttachedWidgetProperty, AttachedWidget, PageDataItem } from '../../src/interfaces';
 
 const { describe, it } = intern.getInterface('bdd');
 const { assert } = intern.getPlugin('chai');
@@ -243,5 +243,24 @@ describe('util', () => {
 
 		const xml = treeToXml(widgets);
 		assert.equal(xml, `<view prop1="value1" prop2="value2"></view>`);
+	});
+
+	it('treeToPageData', () => {
+		const pageData: PageDataItem[] = [
+			{
+				id: '1',
+				parentId: '-1',
+				name: '$',
+				type: 'Object',
+			},
+			{
+				id: '2',
+				parentId: '1',
+				name: 'foo',
+				type: 'String',
+				defaultValue: 'bar',
+			},
+		];
+		assert.deepEqual(treeToPageData(pageData), { foo: 'bar' });
 	});
 });

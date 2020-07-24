@@ -117,5 +117,160 @@ describe('MiniProgramProject', () => {
 		assert.equal(project.getSource('app.wxss'), appWxssSource);
 	});
 
-	it('create page', () => {});
+	it('create page - empty page', () => {
+		const project = new MiniProgramProject({ rootPath: '', useInMemoryFileSystem: true });
+
+		const pageModel: PageModel = {
+			pageInfo: { id: 1, key: 'index', groupPath: 'pages/' },
+			widgets: [
+				{
+					id: '1',
+					parentId: '-1',
+					apiRepoId: 1,
+					widgetName: 'Page',
+					properties: [],
+				},
+			],
+			data: [],
+		};
+		project.createPage(pageModel);
+
+		const pageJsSource = `Page({
+  data: {}
+});`;
+		const pageJsonSource = `{}`;
+		const pageWxmlSource = '';
+		const pageWxssSource = '';
+		assert.equal(project.getSource('pages/index.js'), pageJsSource);
+		assert.equal(project.getSource('pages/index.json'), pageJsonSource);
+		assert.equal(project.getSource('pages/index.wxml'), pageWxmlSource);
+		assert.equal(project.getSource('pages/index.wxss'), pageWxssSource);
+	});
+
+	// 在页面 page.wxml 中不存放 Page 部件，但是 Page 部件的属性要存在 page.json 中
+	it('create page - page json', () => {
+		const project = new MiniProgramProject({ rootPath: '', useInMemoryFileSystem: true });
+
+		const pageModel: PageModel = {
+			pageInfo: { id: 1, key: 'index', groupPath: 'pages/' },
+			widgets: [
+				{
+					id: '1',
+					parentId: '-1',
+					apiRepoId: 1,
+					widgetName: 'Page',
+					properties: [
+						{
+							id: '1',
+							name: 'prop1',
+							valueType: 'string',
+							isExpr: false,
+							value: 'value1',
+							parentId: '-1',
+						},
+					],
+				},
+			],
+			data: [],
+		};
+		project.createPage(pageModel);
+
+		const pageJsSource = `Page({
+  data: {}
+});`;
+		const pageJsonSource = `{
+  "prop1": "value1"
+}`;
+		const pageWxmlSource = '';
+		const pageWxssSource = '';
+		assert.equal(project.getSource('pages/index.js'), pageJsSource);
+		assert.equal(project.getSource('pages/index.json'), pageJsonSource);
+		assert.equal(project.getSource('pages/index.wxml'), pageWxmlSource);
+		assert.equal(project.getSource('pages/index.wxss'), pageWxssSource);
+	});
+
+	it('create page - page event', () => {
+		const project = new MiniProgramProject({ rootPath: '', useInMemoryFileSystem: true });
+
+		const pageModel: PageModel = {
+			pageInfo: { id: 1, key: 'index', groupPath: 'pages/' },
+			widgets: [
+				{
+					id: '1',
+					parentId: '-1',
+					apiRepoId: 1,
+					widgetName: 'Page',
+					properties: [
+						{
+							id: '1',
+							name: 'onFoo',
+							valueType: 'function',
+							isExpr: false,
+							parentId: '-1',
+						},
+					],
+				},
+			],
+			data: [],
+		};
+		project.createPage(pageModel);
+
+		const pageJsSource = `Page({
+  data: {},
+  onFoo: function () {}
+});`;
+		const pageJsonSource = `{}`;
+		const pageWxmlSource = '';
+		const pageWxssSource = '';
+		assert.equal(project.getSource('pages/index.js'), pageJsSource);
+		assert.equal(project.getSource('pages/index.json'), pageJsonSource);
+		assert.equal(project.getSource('pages/index.wxml'), pageWxmlSource);
+		assert.equal(project.getSource('pages/index.wxss'), pageWxssSource);
+	});
+
+	it('create page - page data', () => {
+		const project = new MiniProgramProject({ rootPath: '', useInMemoryFileSystem: true });
+
+		const pageModel: PageModel = {
+			pageInfo: { id: 1, key: 'index', groupPath: 'pages/' },
+			widgets: [
+				{
+					id: '1',
+					parentId: '-1',
+					apiRepoId: 1,
+					widgetName: 'Page',
+					properties: [],
+				},
+			],
+			data: [
+				{
+					id: '1',
+					parentId: '-1',
+					name: '$',
+					type: 'Object',
+				},
+				{
+					id: '2',
+					parentId: '1',
+					name: 'str',
+					type: 'String',
+					defaultValue: 'hello',
+				},
+			],
+		};
+		project.createPage(pageModel);
+
+		const pageJsSource = `Page({
+  data: {
+    str: "hello"
+  }
+});`;
+		const pageJsonSource = `{}`;
+		const pageWxmlSource = '';
+		const pageWxssSource = '';
+		assert.equal(project.getSource('pages/index.js'), pageJsSource);
+		assert.equal(project.getSource('pages/index.json'), pageJsonSource);
+		assert.equal(project.getSource('pages/index.wxml'), pageWxmlSource);
+		assert.equal(project.getSource('pages/index.wxss'), pageWxssSource);
+	});
 });

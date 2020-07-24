@@ -1,4 +1,4 @@
-import { AttachedWidgetProperty, AttachedWidget } from './interfaces';
+import { AttachedWidgetProperty, AttachedWidget, PageDataItem } from './interfaces';
 
 export const ENCODING_UTF8 = 'utf8';
 
@@ -76,4 +76,46 @@ function formatProperties(properties: AttachedWidgetProperty[] = []): string {
 		}
 		return `${props} ${key}="${value}"`;
 	}, '');
+}
+
+export function treeToPageData(pageDataItems: PageDataItem[] = []): any {
+	const rootDataItem = pageDataItems.find((item) => item.parentId === TREE_ROOT_ID);
+	if (!rootDataItem) {
+		return {};
+	}
+
+	function _getObjectValue(dataItem: PageDataItem) {
+		const result: any = {};
+		pageDataItems
+			.filter((item) => item.parentId === dataItem.id)
+			.forEach((item) => {
+				result[item.name] = _getValue(item);
+			});
+		return result;
+	}
+
+	function _getArrayValue(dataItem: PageDataItem) {
+		const result: any[] = [];
+		pageDataItems
+			.filter((item) => item.parentId === dataItem.id)
+			.forEach((item) => {
+				result.push(_getValue(item));
+			});
+		return result;
+	}
+
+	function _getValue(dataItem: PageDataItem) {
+		if (dataItem.type === 'Number') {
+			return Number(dataItem.defaultValue);
+		} else if (dataItem.type === 'Boolean') {
+			return Boolean(dataItem.defaultValue);
+		} else if (dataItem.type === 'Object') {
+			return _getObjectValue(dataItem);
+		} else if (dataItem.type === 'Array') {
+			return _getArrayValue(dataItem);
+		}
+		return dataItem.defaultValue;
+	}
+
+	return _getValue(rootDataItem);
 }
