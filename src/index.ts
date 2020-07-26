@@ -22,6 +22,6 @@ export function run() {
 	}).argv;
 
 	if (argv.type === 'weapp') {
-		weapp.generate(argv['model-dir']);
+		weapp.generate(argv.type, argv['model-dir']);
 	}
 }

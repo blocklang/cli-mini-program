@@ -1,5 +1,5 @@
 {
-  "name": "cli-mini-program",
+  "name": "@blocklang/cli-mini-program",
   "version": "0.0.1-alpha.1",
   "description": "根据 BlockLang 页面模型生成小程序源代码",
   "scripts": {
@@ -26,7 +26,7 @@
     "url": "https://github.com/blocklang/cli-mini-program/issues"
   },
   "homepage": "https://github.com/blocklang/cli-mini-program#readme",
-  "bin": "bin/mp.js",
+  "bin": {"mini-program": "bin/mp.js"},
   "devDependencies": {
     "@commitlint/cli": "^9.1.1",
     "@commitlint/config-conventional": "^9.1.1",

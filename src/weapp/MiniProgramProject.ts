@@ -33,10 +33,14 @@ export default class MiniProgramProject {
 	 * @returns 如果创建成功则返回 `true`，否则返回 `false`
 	 */
 	createApp(appModel: PageModel): boolean {
-		this.createAppJs(appModel);
-		this.createAppJson(appModel);
-		this.createCssFile(appModel);
-		return true;
+		try {
+			this.createAppJs(appModel);
+			this.createAppJson(appModel);
+			this.createCssFile(appModel);
+			return true;
+		} catch {
+			return false;
+		}
 	}
 
 	private createAppJs(appModel: PageModel) {
@@ -92,11 +96,15 @@ export default class MiniProgramProject {
 	 * @returns 如果创建成功则返回 `true`，否则返回 `false`
 	 */
 	createPage(pageModel: PageModel): boolean {
-		this.createPageJs(pageModel);
-		this.createPageJson(pageModel);
-		this.createPageUI(pageModel);
-		this.createPageCss(pageModel);
-		return true;
+		try {
+			this.createPageJs(pageModel);
+			this.createPageJson(pageModel);
+			this.createPageUI(pageModel);
+			this.createPageCss(pageModel);
+			return true;
+		} catch {
+			return false;
+		}
 	}
 
 	private createPageJs(pageModel: PageModel) {
